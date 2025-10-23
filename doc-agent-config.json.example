@@ -1,0 +1,287 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "title": "Auto-Docs Agent Configuration",
+  "description": "Configurazione per il sistema di documentazione automatica",
+  
+  "ai": {
+    "provider": "openrouter",
+    "model": "anthropic/claude-3.5-sonnet",
+    "fallbackModels": [
+      "openai/gpt-4-turbo",
+      "google/gemini-pro-1.5",
+      "anthropic/claude-3-haiku"
+    ],
+    "temperature": 0.3,
+    "maxTokens": 4000,
+    "topP": 1.0,
+    "frequencyPenalty": 0.0,
+    "presencePenalty": 0.0,
+    "retryStrategy": {
+      "maxRetries": 3,
+      "initialDelay": 1000,
+      "maxDelay": 10000,
+      "backoffMultiplier": 2
+    }
+  },
+  
+  "documentation": {
+    "docsPath": "docs",
+    "format": "mdx",
+    "language": "it",
+    "alternativeLanguages": ["en"],
+    "style": {
+      "tone": "technical",
+      "complexity": "intermediate",
+      "includeExamples": true,
+      "exampleStyle": "practical",
+      "useMintlifyComponents": true,
+      "maxExamplesPerSection": 3
+    },
+    "structure": {
+      "autoCreatePages": true,
+      "autoUpdateMintJson": true,
+      "groupByFeature": true,
+      "createChangelog": true,
+      "versionDocs": false
+    }
+  },
+  
+  "triggers": {
+    "filePatterns": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.py",
+      "**/*.go",
+      "**/*.java",
+      "**/*.rs",
+      "**/*.rb",
+      "**/*.php",
+      "**/*.c",
+      "**/*.cpp",
+      "**/*.cs",
+      "**/*.swift",
+      "**/*.kt"
+    ],
+    "excludePatterns": [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      ".github/**",
+      "docs/**",
+      "**/*.test.*",
+      "**/*.spec.*",
+      "**/*.min.*",
+      "**/*.bundle.*",
+      "**/vendor/**",
+      "**/__tests__/**",
+      "**/__mocks__/**"
+    ],
+    "minFilesChanged": 1,
+    "minLinesChanged": 5,
+    "excludeBranches": [
+      "docs/**",
+      "documentation/**"
+    ]
+  },
+  
+  "analysis": {
+    "contextWindow": {
+      "maxFileSizeBytes": 100000,
+      "maxFilesPerRequest": 10,
+      "includeFullDiff": true,
+      "includeFileContent": true,
+      "includeGitHistory": false
+    },
+    "codeAnalysis": {
+      "extractJSDoc": true,
+      "extractTypeInfo": true,
+      "extractTests": true,
+      "extractExamples": true,
+      "analyzeBreakingChanges": true,
+      "analyzeDeprecations": true
+    },
+    "smartMatching": {
+      "enabled": true,
+      "fuzzyMatch": true,
+      "similarityThreshold": 0.7,
+      "autoLinkRelated": true
+    }
+  },
+  
+  "prompt": {
+    "systemMessage": "Sei un esperto di documentazione tecnica specializzato in Mintlify. Il tuo compito è creare documentazione chiara, concisa e professionale in italiano.",
+    
+    "customInstructions": [
+      "Usa sempre esempi pratici e realistici",
+      "Spiega concetti complessi con analogie semplici",
+      "Includi warning per breaking changes",
+      "Aggiungi tips per best practices",
+      "Documenta edge cases importanti",
+      "Mantieni paragrafi brevi (2-4 righe)",
+      "Usa liste puntate per elenchi",
+      "Evidenzia informazioni critiche"
+    ],
+    
+    "templates": {
+      "newFeature": "Questa è una nuova feature. Documentala completamente con esempi.",
+      "bugFix": "Questo è un bug fix. Documenta cosa è stato risolto e come usare correttamente.",
+      "breakingChange": "ATTENZIONE: Breaking change. Documenta chiaramente cosa cambia e come migrare.",
+      "deprecation": "Questa funzionalità è deprecata. Documenta alternative e timeline di removal.",
+      "enhancement": "Questa è un enhancement. Documenta i miglioramenti e vantaggi."
+    }
+  },
+  
+  "output": {
+    "createPR": true,
+    "prBranch": "docs/auto-pr-{number}",
+    "prTitle": "📚 [Auto] Documentation for PR #{number}",
+    "commitMessage": "docs: auto-update from PR #{number}",
+    "autoAssignReviewer": true,
+    "addLabels": [
+      "documentation",
+      "automated",
+      "ai-generated"
+    ],
+    "commentOnOriginalPR": true
+  },
+  
+  "features": {
+    "autoScreenshots": false,
+    "autoDiagrams": false,
+    "autoVideos": false,
+    "autoTranslation": false,
+    "autoChangelog": true,
+    "autoAPIReference": true,
+    "autoCodeExamples": true,
+    "autoRelatedLinks": true,
+    "autoSearchKeywords": true,
+    "autoTOC": true
+  },
+  
+  "mintlify": {
+    "components": {
+      "useTip": true,
+      "useWarning": true,
+      "useInfo": true,
+      "useNote": true,
+      "useCodeGroup": true,
+      "useAccordion": false,
+      "useTabs": true,
+      "useCards": false
+    },
+    "frontmatter": {
+      "autoIcon": true,
+      "autoDescription": true,
+      "autoOpenGraph": false,
+      "autoSEO": true
+    }
+  },
+  
+  "monitoring": {
+    "enabled": true,
+    "logLevel": "info",
+    "metricsFile": "metrics.jsonl",
+    "trackTokenUsage": true,
+    "trackCosts": true,
+    "trackQuality": false,
+    "sendWebhook": false,
+    "webhookUrl": null
+  },
+  
+  "quality": {
+    "minConfidenceScore": 0.7,
+    "requireHumanReview": true,
+    "autoMerge": false,
+    "linting": {
+      "enabled": true,
+      "markdownLint": true,
+      "spellCheck": false,
+      "linkCheck": true
+    }
+  },
+  
+  "performance": {
+    "caching": {
+      "enabled": true,
+      "ttl": 3600,
+      "cacheDocContent": true
+    },
+    "rateLimit": {
+      "requestsPerMinute": 10,
+      "burstLimit": 20
+    },
+    "timeout": {
+      "aiRequest": 60000,
+      "totalWorkflow": 300000
+    }
+  },
+  
+  "debug": {
+    "verbose": false,
+    "savePrompts": false,
+    "saveResponses": false,
+    "dryRun": false
+  },
+  
+  "customRules": [
+    {
+      "name": "API Endpoints",
+      "condition": {
+        "filePattern": "**/*api*.{ts,js}",
+        "contains": ["export.*function", "router\\.", "app\\."]
+      },
+      "action": {
+        "template": "api-reference",
+        "generateOpenAPI": false,
+        "includeAuth": true,
+        "includeExamples": true
+      }
+    },
+    {
+      "name": "React Components",
+      "condition": {
+        "filePattern": "**/components/**/*.{tsx,jsx}",
+        "contains": ["export.*function", "export.*const.*=.*=>"]
+      },
+      "action": {
+        "template": "component",
+        "includeProps": true,
+        "includeScreenshot": false,
+        "includeStorybook": false
+      }
+    },
+    {
+      "name": "Database Models",
+      "condition": {
+        "filePattern": "**/models/**/*.{ts,js,py}",
+        "contains": ["class.*Model", "Schema", "Table"]
+      },
+      "action": {
+        "template": "data-model",
+        "includeERD": false,
+        "includeExamples": true
+      }
+    }
+  ],
+  
+  "integrations": {
+    "slack": {
+      "enabled": false,
+      "webhookUrl": null,
+      "notifyOn": ["success", "failure"]
+    },
+    "discord": {
+      "enabled": false,
+      "webhookUrl": null,
+      "notifyOn": ["success"]
+    },
+    "email": {
+      "enabled": false,
+      "recipients": [],
+      "notifyOn": ["failure"]
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Business Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0066CC",
+    "light": "#3399FF",
+    "dark": "#003D7A"
+  },
+  "topbarLinks": [
+    {
+      "name": "Website",
+      "url": "https://tuoprogetto.com"
+    },
+    {
+      "name": "Contact",
+      "url": "mailto:info@tuoprogetto.com"
+    }
+  ],
+  "tabs": [
+    {
+      "name": "Releases",
+      "url": "releases"
+    },
+    {
+      "name": "Metrics",
+      "url": "metrics"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Overview",
+      "pages": [
+        "overview",
+        "executive-summary",
+        "value-proposition"
+      ]
+    },
+    {
+      "group": "Product Updates",
+      "pages": [
+        "releases/latest",
+        "releases/q4-2024",
+        "releases/q3-2024",
+        "releases/q2-2024",
+        "releases/roadmap"
+      ]
+    },
+    {
+      "group": "Business Metrics",
+      "pages": [
+        "metrics/overview",
+        "metrics/user-engagement",
+        "metrics/revenue",
+        "metrics/customer-satisfaction",
+        "metrics/performance-kpis"
+      ]
+    },
+    {
+      "group": "Strategic Initiatives",
+      "pages": [
+        "initiatives/current-quarter",
+        "initiatives/completed",
+        "initiatives/planned"
+      ]
+    },
+    {
+      "group": "Impact Analysis",
+      "pages": [
+        "impact/user-value",
+        "impact/business-value",
+        "impact/roi",
+        "impact/competitive-advantage"
+      ]
+    },
+    {
+      "group": "Risk Management",
+      "pages": [
+        "risk/assessment",
+        "risk/mitigation",
+        "risk/technical-debt"
+      ]
+    },
+    {
+      "group": "Market & Competition",
+      "pages": [
+        "market/analysis",
+        "market/positioning",
+        "market/differentiation"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "linkedin": "https://linkedin.com/company/tuocompany",
+    "twitter": "https://twitter.com/tuoaccount"
+  },
+  "feedback": {
+    "thumbsRating": true
+  }
+}

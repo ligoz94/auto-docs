@@ -1,0 +1,124 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "User Guide",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#FF6B6B",
+    "light": "#FF8787",
+    "dark": "#EE5A52"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "https://support.tuoprogetto.com"
+    },
+    {
+      "name": "Community",
+      "url": "https://community.tuoprogetto.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Login",
+    "url": "https://app.tuoprogetto.com/login"
+  },
+  "tabs": [
+    {
+      "name": "Guides",
+      "url": "guides"
+    },
+    {
+      "name": "Video Tutorials",
+      "url": "videos"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Welcome",
+      "pages": [
+        "welcome",
+        "getting-started",
+        "first-steps",
+        "quick-tour"
+      ]
+    },
+    {
+      "group": "Basic Features",
+      "pages": [
+        "guides/create-account",
+        "guides/setup-profile",
+        "guides/basic-navigation",
+        "guides/settings"
+      ]
+    },
+    {
+      "group": "How-To Guides",
+      "pages": [
+        "guides/create-project",
+        "guides/invite-team",
+        "guides/collaborate",
+        "guides/share-work",
+        "guides/export-data"
+      ]
+    },
+    {
+      "group": "Advanced Features",
+      "pages": [
+        "guides/automation",
+        "guides/integrations",
+        "guides/custom-workflows",
+        "guides/api-access"
+      ]
+    },
+    {
+      "group": "Tips & Tricks",
+      "pages": [
+        "tips/productivity",
+        "tips/keyboard-shortcuts",
+        "tips/templates",
+        "tips/best-practices"
+      ]
+    },
+    {
+      "group": "Troubleshooting",
+      "pages": [
+        "troubleshooting/common-issues",
+        "troubleshooting/error-messages",
+        "troubleshooting/contact-support"
+      ]
+    },
+    {
+      "group": "Updates",
+      "pages": [
+        "updates/whats-new",
+        "updates/changelog",
+        "updates/upcoming-features"
+      ]
+    },
+    {
+      "group": "Resources",
+      "pages": [
+        "resources/faq",
+        "resources/glossary",
+        "resources/video-tutorials",
+        "resources/templates"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/tuoaccount",
+    "facebook": "https://facebook.com/tuoprogetto",
+    "youtube": "https://youtube.com/tuoprogetto"
+  },
+  "feedback": {
+    "suggestEdit": false,
+    "raiseIssue": true,
+    "thumbsRating": true
+  },
+  "search": {
+    "prompt": "Cerca nella guida utente..."
+  }
+}

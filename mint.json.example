@@ -1,0 +1,124 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Il Mio Progetto",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "background": {
+      "dark": "#1A1A1A"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/tuo-username/tuo-repo"
+    },
+    {
+      "name": "Discord",
+      "url": "https://discord.gg/tuo-server"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Inizia",
+    "url": "https://app.tuoprogetto.com"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Guide",
+      "url": "guides"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/tuo-server"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://blog.tuoprogetto.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Inizia",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "installation"
+      ]
+    },
+    {
+      "group": "Guide",
+      "pages": [
+        "guides/getting-started",
+        "guides/configuration",
+        "guides/authentication",
+        "guides/deployment"
+      ]
+    },
+    {
+      "group": "Concetti Base",
+      "pages": [
+        "concepts/architecture",
+        "concepts/data-model",
+        "concepts/security"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/overview",
+        "api-reference/authentication",
+        {
+          "group": "Endpoints",
+          "pages": [
+            "api-reference/endpoints/users",
+            "api-reference/endpoints/projects",
+            "api-reference/endpoints/tasks"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Advanced",
+      "pages": [
+        "advanced/webhooks",
+        "advanced/rate-limiting",
+        "advanced/error-handling"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/tuo-username/tuo-repo",
+    "twitter": "https://twitter.com/tuoaccount",
+    "linkedin": "https://linkedin.com/company/tuocompany"
+  },
+  "analytics": {
+    "ga4": {
+      "measurementId": "G-XXXXXXXXXX"
+    },
+    "plausible": {
+      "domain": "docs.tuoprogetto.com"
+    }
+  },
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true,
+    "thumbsRating": true
+  },
+  "search": {
+    "prompt": "Cerca nella documentazione..."
+  }
+}

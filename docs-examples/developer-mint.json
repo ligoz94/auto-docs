@@ -1,0 +1,133 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Developer Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/tuo-username/tuo-repo"
+    },
+    {
+      "name": "API Status",
+      "url": "https://status.tuoprogetto.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.tuoprogetto.com"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Architecture",
+      "url": "architecture"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "installation",
+        "development-setup"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "concepts/architecture-overview",
+        "concepts/data-model",
+        "concepts/authentication",
+        "concepts/authorization"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/overview",
+        "api-reference/authentication",
+        {
+          "group": "Users",
+          "pages": [
+            "api-reference/users/create",
+            "api-reference/users/get",
+            "api-reference/users/update",
+            "api-reference/users/delete"
+          ]
+        },
+        {
+          "group": "Projects",
+          "pages": [
+            "api-reference/projects/create",
+            "api-reference/projects/list",
+            "api-reference/projects/get",
+            "api-reference/projects/update"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "architecture/system-design",
+        "architecture/database-schema",
+        "architecture/microservices",
+        "architecture/security",
+        "architecture/scalability"
+      ]
+    },
+    {
+      "group": "Development",
+      "pages": [
+        "development/coding-standards",
+        "development/testing",
+        "development/debugging",
+        "development/performance",
+        "development/security-best-practices"
+      ]
+    },
+    {
+      "group": "Deployment",
+      "pages": [
+        "deployment/environments",
+        "deployment/ci-cd",
+        "deployment/docker",
+        "deployment/kubernetes",
+        "deployment/monitoring"
+      ]
+    },
+    {
+      "group": "Reference",
+      "pages": [
+        "reference/error-codes",
+        "reference/rate-limits",
+        "reference/webhooks",
+        "reference/sdks",
+        "reference/changelog-technical"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/tuo-username/tuo-repo",
+    "twitter": "https://twitter.com/tuoaccount",
+    "discord": "https://discord.gg/tuo-server"
+  },
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true,
+    "thumbsRating": true
+  }
+}

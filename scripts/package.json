@@ -1,0 +1,42 @@
+{
+  "name": "multi-audience-docs-scripts",
+  "version": "2.0.0",
+  "description": "Scripts per generazione documentazione multi-audience con tracking commit",
+  "type": "module",
+  "scripts": {
+    "docs:init": "node init-tracking.js",
+    "docs:generate": "node doc-generator-multi-audience.js",
+    "docs:dev:developer": "cd ../docs/developer && npx mintlify dev",
+    "docs:dev:stakeholder": "cd ../docs/stakeholder && npx mintlify dev",
+    "docs:dev:customer": "cd ../docs/customer && npx mintlify dev",
+    "docs:build:all": "npm run docs:build:developer && npm run docs:build:stakeholder && npm run docs:build:customer",
+    "docs:build:developer": "cd ../docs/developer && npx mintlify build",
+    "docs:build:stakeholder": "cd ../docs/stakeholder && npx mintlify build",
+    "docs:build:customer": "cd ../docs/customer && npx mintlify build",
+    "tracking:show": "cat ../.docs-tracking.json | jq .",
+    "tracking:reset": "npm run docs:init -- --force",
+    "metrics:show": "cat metrics.jsonl | jq -s 'group_by(.audience) | map({audience: .[0].audience, runs: length, total_pages: map(.pagesUpdated) | add, avg_duration: (map(.duration) | add / length)})'",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "documentation",
+    "ai",
+    "openrouter",
+    "mintlify",
+    "multi-audience"
+  ],
+  "author": "Il Tuo Nome",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^4.57.0",
+    "simple-git": "^3.25.0",
+    "gray-matter": "^4.0.3",
+    "marked": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
