@@ -1,0 +1,25 @@
+{
+  "last_documented_commit": "68bcc28a10fb7c45a7469e3c3b732222000363f8",
+  "last_documented_at": "2025-10-23T16:56:51.139Z",
+  "documented_by": "manual_init",
+  "initialized_at": "2025-10-23T16:56:51.139Z",
+  "commit_info": {
+    "hash": "68bcc28a10fb7c45a7469e3c3b732222000363f8",
+    "short_hash": "68bcc28",
+    "branch": "main",
+    "author": "Test User",
+    "email": "test@example.com",
+    "date": "2025-10-23 18:56:41 +0200",
+    "message": "feat: add login authentication with 2FA support"
+  },
+  "commit_range": {
+    "from": "68bcc28a10fb7c45a7469e3c3b732222000363f8",
+    "to": "68bcc28a10fb7c45a7469e3c3b732222000363f8",
+    "count": 0
+  },
+  "audiences": [],
+  "stats": {
+    "total_documentations": 0,
+    "last_run_duration": 0
+  }
+}

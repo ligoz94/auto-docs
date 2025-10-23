@@ -1,0 +1,110 @@
+---
+title: 'Login Authentication with 2FA'
+description: 'Implement secure login with Two-Factor Authentication support'
+---
+
+# Login Authentication API
+
+Secure authentication endpoint with optional 2FA support. Implements industry standard authentication flow with multiple verification steps.
+
+## Base Authentication
+
+<CodeGroup>
+```typescript Request
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": string,
+  "password": string,
+  "deviceId": string // Optional device fingerprint
+}
+```
+
+```typescript Response
+{
+  "status": "success" | "2fa_required",
+  "sessionToken": string, // Only if 2FA not required
+  "temporaryToken": string, // Only if 2FA required
+  "userId": string
+}
+```
+</CodeGroup>
+
+## Parameters
+
+<ParamField query="email" type="string" required>
+  User email address for authentication
+</ParamField>
+
+<ParamField query="password" type="string" required>
+  User password (min 8 chars, must include numbers and special chars)
+</ParamField>
+
+<ParamField query="deviceId" type="string">
+  Optional device fingerprint for trusted device verification
+</ParamField>
+
+## 2FA Verification
+
+When 2FA is required, use the temporary token to complete authentication:
+
+<CodeGroup>
+```typescript Request
+POST /api/auth/verify-2fa
+Content-Type: application/json
+
+{
+  "temporaryToken": string,
+  "code": string,
+  "deviceId": string // Optional
+}
+```
+
+```typescript Response
+{
+  "status": "success",
+  "sessionToken": string,
+  "userId": string
+}
+```
+</CodeGroup>
+
+## Error Handling
+
+```typescript
+type LoginError = {
+  code: 'INVALID_CREDENTIALS' | 'ACCOUNT_LOCKED' | 'INVALID_2FA' | 'EXPIRED_TOKEN',
+  message: string
+}
+```
+
+## Security Considerations
+
+- Implements rate limiting (max 5 attempts/minute)
+- Session tokens expire after 24h
+- 2FA codes valid for 5 minutes
+- Supports device fingerprinting for trusted devices
+- Passwords are hashed using Argon2id
+
+## Example Implementation
+
+<CodeGroup>
+```typescript
+import { login, verify2FA } from '@myapp/auth'
+
+async function authenticateUser(email: string, password: string) {
+  const response = await login({ email, password })
+  
+  if (response.status === '2fa_required') {
+    const code = await promptUser('Enter 2FA code')
+    return verify2FA({
+      temporaryToken: response.temporaryToken,
+      code
+    })
+  }
+  
+  return response
+}
+```
+</CodeGroup>

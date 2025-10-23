@@ -2,39 +2,39 @@
 
 /**
  * Multi-Audience Documentation Generator
- * 
+ *
  * Genera documentazione per diverse audience (developer, stakeholder, customer)
  * analizzando un range di commit Git.
  */
 
-import OpenAI from 'openai';
-import simpleGit from 'simple-git';
-import fs from 'fs/promises';
-import path from 'path';
-import matter from 'gray-matter';
+import OpenAI from "openai";
+import simpleGit from "simple-git";
+import fs from "fs/promises";
+import path from "path";
+import matter from "gray-matter";
 
 const git = simpleGit();
 
 // ==================== CONFIGURAZIONE ====================
 
 const config = {
-  audience: process.env.AUDIENCE || 'developer',
-  model: process.env.AI_MODEL || 'anthropic/claude-3.5-sonnet',
-  docsPath: process.env.DOCS_PATH || './docs',
+  audience: process.env.AUDIENCE || "developer",
+  model: process.env.AI_MODEL || "z-ai/glm-4.5-air:free",
+  docsPath: process.env.DOCS_PATH || "./docs",
   fromCommit: process.env.FROM_COMMIT,
-  toCommit: process.env.TO_COMMIT || 'HEAD',
-  maxTokens: parseInt(process.env.MAX_TOKENS || '8000'),
-  temperature: parseFloat(process.env.TEMPERATURE || '0.3')
+  toCommit: process.env.TO_COMMIT || "HEAD",
+  maxTokens: parseInt(process.env.MAX_TOKENS || "8000"),
+  temperature: parseFloat(process.env.TEMPERATURE || "0.3"),
 };
 
 // Client OpenRouter
 const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
+  baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
   defaultHeaders: {
-    'HTTP-Referer': process.env.GITHUB_REPOSITORY || 'https://github.com',
-    'X-Title': 'Multi-Audience Documentation Generator'
-  }
+    "HTTP-Referer": process.env.GITHUB_REPOSITORY || "https://github.com",
+    "X-Title": "Multi-Audience Documentation Generator",
+  },
 });
 
 // ==================== PROMPT TEMPLATES ====================
@@ -70,31 +70,50 @@ Creare documentazione tecnica dettagliata, completa e precisa per sviluppatori.
 - Note su performance e security
 - Configurazioni avanzate`,
 
-    template: (context) => `Analizza questi commit e genera/aggiorna la documentazione TECNICA per SVILUPPATORI.
+    template: (
+      context
+    ) => `Analizza questi commit e genera/aggiorna la documentazione TECNICA per SVILUPPATORI.
 
 ## Commit analizzati (${context.commits.length}):
-${context.commits.map(c => `- ${c.hash}: ${c.message} (${c.author})`).join('\n')}
+${context.commits
+  .map((c) => `- ${c.hash}: ${c.message} (${c.author})`)
+  .join("\n")}
 
 ## File modificati:
-${context.changedFiles.map(f => `- ${f.path} (${f.additions}+ ${f.deletions}-)`).join('\n')}
+${context.changedFiles
+  .map((f) => `- ${f.path} (${f.additions}+ ${f.deletions}-)`)
+  .join("\n")}
 
 ## Diff principali:
-${context.diffs.slice(0, 3).map(d => `
+${context.diffs
+  .slice(0, 3)
+  .map(
+    (d) => `
 ### ${d.file}
 \`\`\`diff
 ${d.content.slice(0, 1500)}
 \`\`\`
-`).join('\n')}
+`
+  )
+  .join("\n")}
 
 ## Documentazione esistente:
-${Object.keys(context.existingDocs).length > 0 ? 
-  Object.entries(context.existingDocs).slice(0, 2).map(([file, doc]) => `
+${
+  Object.keys(context.existingDocs).length > 0
+    ? Object.entries(context.existingDocs)
+        .slice(0, 2)
+        .map(
+          ([file, doc]) => `
 ### ${file}
 \`\`\`yaml
 ${JSON.stringify(doc.frontmatter, null, 2)}
 \`\`\`
 Contenuto: ${doc.content.slice(0, 500)}...
-`).join('\n') : 'Nessuna documentazione esistente'}
+`
+        )
+        .join("\n")
+    : "Nessuna documentazione esistente"
+}
 
 ## Il tuo compito:
 1. Analizza TUTTI i commit nel range
@@ -123,7 +142,7 @@ Genera JSON con questa struttura:
 }
 \`\`\`
 
-Genera SOLO il JSON, nient'altro.`
+Genera SOLO il JSON, nient'altro.`,
   },
 
   stakeholder: {
@@ -154,10 +173,12 @@ Creare documentazione comprensibile che comunica valore business, progress e imp
 - ROI e valore aggiunto
 - Prossimi passi`,
 
-    template: (context) => `Analizza questi commit e genera/aggiorna la documentazione BUSINESS per STAKEHOLDER.
+    template: (
+      context
+    ) => `Analizza questi commit e genera/aggiorna la documentazione BUSINESS per STAKEHOLDER.
 
 ## Commit analizzati (${context.commits.length}):
-${context.commits.map(c => `- ${c.message}`).join('\n')}
+${context.commits.map((c) => `- ${c.message}`).join("\n")}
 
 ## Periodo: ${context.dateRange.from} → ${context.dateRange.to}
 
@@ -197,7 +218,7 @@ Genera JSON:
 }
 \`\`\`
 
-Genera SOLO il JSON, nient'altro.`
+Genera SOLO il JSON, nient'altro.`,
   },
 
   customer: {
@@ -230,13 +251,15 @@ Creare guide pratiche che aiutano gli utenti a usare il software con successo.
 - Cosa è cambiato (changelog user-friendly)
 - Video tutorial (descritti)`,
 
-    template: (context) => `Analizza questi commit e genera/aggiorna la documentazione USER per CLIENTI FINALI.
+    template: (
+      context
+    ) => `Analizza questi commit e genera/aggiorna la documentazione USER per CLIENTI FINALI.
 
 ## Commit analizzati (${context.commits.length}):
-${context.commits.map(c => `- ${c.message}`).join('\n')}
+${context.commits.map((c) => `- ${c.message}`).join("\n")}
 
 ## Nuove funzionalità identificate:
-${context.features.join('\n')}
+${context.features.join("\n")}
 
 ## Modifiche rilevanti per utenti:
 ${context.userFacingChanges}
@@ -292,8 +315,8 @@ Genera JSON:
 }
 \`\`\`
 
-Genera SOLO il JSON, nient'altro.`
-  }
+Genera SOLO il JSON, nient'altro.`,
+  },
 };
 
 // ==================== FUNZIONI PRINCIPALI ====================
@@ -303,12 +326,12 @@ Genera SOLO il JSON, nient'altro.`
  */
 async function getCommitRange(from, to) {
   const log = await git.log({ from, to });
-  return log.all.map(commit => ({
+  return log.all.map((commit) => ({
     hash: commit.hash.substring(0, 7),
     message: commit.message,
     author: commit.author_name,
     email: commit.author_email,
-    date: commit.date
+    date: commit.date,
   }));
 }
 
@@ -317,14 +340,14 @@ async function getCommitRange(from, to) {
  */
 async function getChangedFilesInRange(from, to) {
   const diffSummary = await git.diffSummary([`${from}...${to}`]);
-  
+
   return diffSummary.files
-    .filter(f => !f.file.startsWith('docs/'))
-    .map(f => ({
+    .filter((f) => !f.file.startsWith("docs/"))
+    .map((f) => ({
       path: f.file,
       additions: f.insertions,
       deletions: f.deletions,
-      changes: f.changes
+      changes: f.changes,
     }));
 }
 
@@ -333,21 +356,22 @@ async function getChangedFilesInRange(from, to) {
  */
 async function getDiffsForFiles(files, from, to) {
   const diffs = [];
-  
-  for (const file of files.slice(0, 10)) { // Limita a 10 file per non esplodere
+
+  for (const file of files.slice(0, 10)) {
+    // Limita a 10 file per non esplodere
     try {
-      const diff = await git.diff([`${from}...${to}`, '--', file.path]);
+      const diff = await git.diff([`${from}...${to}`, "--", file.path]);
       if (diff) {
         diffs.push({
           file: file.path,
-          content: diff
+          content: diff,
         });
       }
     } catch (error) {
       console.warn(`⚠️ Could not get diff for ${file.path}`);
     }
   }
-  
+
   return diffs;
 }
 
@@ -355,12 +379,15 @@ async function getDiffsForFiles(files, from, to) {
  * Genera summary delle modifiche
  */
 function generateChangeSummary(commits, files) {
-  const stats = files.reduce((acc, f) => ({
-    additions: acc.additions + f.additions,
-    deletions: acc.deletions + f.deletions,
-    files: acc.files + 1
-  }), { additions: 0, deletions: 0, files: 0 });
-  
+  const stats = files.reduce(
+    (acc, f) => ({
+      additions: acc.additions + f.additions,
+      deletions: acc.deletions + f.deletions,
+      files: acc.files + 1,
+    }),
+    { additions: 0, deletions: 0, files: 0 }
+  );
+
   return `${commits.length} commit, ${stats.files} file modificati, +${stats.additions}/-${stats.deletions} righe`;
 }
 
@@ -368,10 +395,10 @@ function generateChangeSummary(commits, files) {
  * Identifica feature user-facing dai commit
  */
 function identifyUserFacingFeatures(commits) {
-  const keywords = ['feat:', 'feature:', 'add:', 'new:', 'ui:', 'ux:'];
+  const keywords = ["feat:", "feature:", "add:", "new:", "ui:", "ux:"];
   return commits
-    .filter(c => keywords.some(k => c.message.toLowerCase().includes(k)))
-    .map(c => c.message);
+    .filter((c) => keywords.some((k) => c.message.toLowerCase().includes(k)))
+    .map((c) => c.message);
 }
 
 /**
@@ -379,26 +406,26 @@ function identifyUserFacingFeatures(commits) {
  */
 async function findExistingDocs(docsPath) {
   const docs = {};
-  
+
   try {
     const files = await findAllMdxFiles(docsPath);
-    
+
     for (const file of files.slice(0, 5)) {
       try {
-        const content = await fs.readFile(file, 'utf-8');
+        const content = await fs.readFile(file, "utf-8");
         const parsed = matter(content);
         docs[file] = {
           frontmatter: parsed.data,
-          content: parsed.content
+          content: parsed.content,
         };
       } catch (error) {
         console.warn(`⚠️ Could not read ${file}`);
       }
     }
   } catch (error) {
-    console.log('ℹ️ No existing docs found (first run?)');
+    console.log("ℹ️ No existing docs found (first run?)");
   }
-  
+
   return docs;
 }
 
@@ -407,17 +434,17 @@ async function findExistingDocs(docsPath) {
  */
 async function findAllMdxFiles(dir) {
   const files = [];
-  
+
   async function walk(directory) {
     try {
       const entries = await fs.readdir(directory, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = path.join(directory, entry.name);
-        
+
         if (entry.isDirectory()) {
           await walk(fullPath);
-        } else if (entry.name.endsWith('.mdx')) {
+        } else if (entry.name.endsWith(".mdx")) {
           files.push(fullPath);
         }
       }
@@ -425,7 +452,7 @@ async function findAllMdxFiles(dir) {
       // Directory non esiste, ok per prima esecuzione
     }
   }
-  
+
   await walk(dir);
   return files;
 }
@@ -435,7 +462,7 @@ async function findAllMdxFiles(dir) {
  */
 async function buildContext(commits, changedFiles, diffs) {
   const existingDocs = await findExistingDocs(config.docsPath);
-  
+
   const context = {
     commits,
     changedFiles,
@@ -444,15 +471,17 @@ async function buildContext(commits, changedFiles, diffs) {
     summary: generateChangeSummary(commits, changedFiles),
     features: identifyUserFacingFeatures(commits),
     dateRange: {
-      from: commits[commits.length - 1]?.date || 'N/A',
-      to: commits[0]?.date || 'N/A'
+      from: commits[commits.length - 1]?.date || "N/A",
+      to: commits[0]?.date || "N/A",
     },
     userFacingChanges: changedFiles
-      .filter(f => f.path.includes('components/') || f.path.includes('pages/'))
-      .map(f => f.path)
-      .join(', ')
+      .filter(
+        (f) => f.path.includes("components/") || f.path.includes("pages/")
+      )
+      .map((f) => f.path)
+      .join(", "),
   };
-  
+
   return context;
 }
 
@@ -460,40 +489,41 @@ async function buildContext(commits, changedFiles, diffs) {
  * Chiama l'AI per generare documentazione
  */
 async function generateDocumentation(context) {
-  console.log('📡 Chiamata a OpenRouter...');
-  
+  console.log("📡 Chiamata a OpenRouter...");
+
   const audienceConfig = AUDIENCE_PROMPTS[config.audience];
   const prompt = audienceConfig.template(context);
-  
+
   console.log(`🎯 Audience: ${config.audience}`);
   console.log(`🤖 Model: ${config.model}`);
-  
+
   const response = await openai.chat.completions.create({
     model: config.model,
     messages: [
       {
-        role: 'system',
-        content: audienceConfig.systemMessage
+        role: "system",
+        content: audienceConfig.systemMessage,
       },
       {
-        role: 'user',
-        content: prompt
-      }
+        role: "user",
+        content: prompt,
+      },
     ],
     temperature: config.temperature,
-    max_tokens: config.maxTokens
+    max_tokens: config.maxTokens,
   });
-  
+
   const content = response.choices[0].message.content;
-  
+
   // Estrai JSON
-  const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
-                    content.match(/```\n([\s\S]*?)\n```/);
-  
+  const jsonMatch =
+    content.match(/```json\n([\s\S]*?)\n```/) ||
+    content.match(/```\n([\s\S]*?)\n```/);
+
   if (jsonMatch) {
     return JSON.parse(jsonMatch[1]);
   }
-  
+
   return JSON.parse(content);
 }
 
@@ -502,22 +532,22 @@ async function generateDocumentation(context) {
  */
 async function applyUpdates(updates) {
   console.log(`\n📝 Applicazione di ${updates.length} aggiornamenti...`);
-  
+
   for (const update of updates) {
     const { file, action, content, reason } = update;
-    
-    console.log(`  ${action === 'create' ? '➕' : '✏️'} ${file}`);
+
+    console.log(`  ${action === "create" ? "➕" : "✏️"} ${file}`);
     console.log(`     ${reason}`);
-    
+
     // Crea directory se non esiste
     const dir = path.dirname(file);
     await fs.mkdir(dir, { recursive: true });
-    
+
     // Scrivi file
-    await fs.writeFile(file, content, 'utf-8');
+    await fs.writeFile(file, content, "utf-8");
   }
-  
-  console.log('✅ Aggiornamenti applicati');
+
+  console.log("✅ Aggiornamenti applicati");
 }
 
 /**
@@ -527,75 +557,80 @@ async function saveMetrics(data) {
   const metrics = {
     timestamp: new Date().toISOString(),
     audience: config.audience,
-    ...data
+    ...data,
   };
-  
-  await fs.appendFile(
-    'metrics.jsonl',
-    JSON.stringify(metrics) + '\n',
-    { flag: 'a' }
-  );
+
+  await fs.appendFile("metrics.jsonl", JSON.stringify(metrics) + "\n", {
+    flag: "a",
+  });
 }
 
 /**
  * Main
  */
 async function main() {
-  console.log('🤖 Multi-Audience Documentation Generator');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-  
+  console.log("🤖 Multi-Audience Documentation Generator");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
   const startTime = Date.now();
-  
+
   try {
     // 1. Valida configurazione
     if (!config.fromCommit) {
-      throw new Error('FROM_COMMIT è richiesto');
+      throw new Error("FROM_COMMIT è richiesto");
     }
-    
+
     console.log(`📊 Configurazione:`);
     console.log(`   Audience: ${config.audience}`);
     console.log(`   Range: ${config.fromCommit}...${config.toCommit}`);
     console.log(`   Docs: ${config.docsPath}\n`);
-    
+
     // 2. Ottieni commit nel range
-    console.log('📋 Analisi commit...');
+    console.log("📋 Analisi commit...");
     const commits = await getCommitRange(config.fromCommit, config.toCommit);
     console.log(`   Trovati ${commits.length} commit\n`);
-    
+
     if (commits.length === 0) {
-      console.log('ℹ️ Nessun commit da analizzare');
+      console.log("ℹ️ Nessun commit da analizzare");
       return;
     }
-    
+
     // 3. Ottieni file modificati
-    console.log('📁 Analisi file modificati...');
-    const changedFiles = await getChangedFilesInRange(config.fromCommit, config.toCommit);
+    console.log("📁 Analisi file modificati...");
+    const changedFiles = await getChangedFilesInRange(
+      config.fromCommit,
+      config.toCommit
+    );
     console.log(`   Trovati ${changedFiles.length} file modificati\n`);
-    
+
     if (changedFiles.length === 0) {
-      console.log('ℹ️ Nessun file rilevante modificato');
+      console.log("ℹ️ Nessun file rilevante modificato");
       return;
     }
-    
+
     // 4. Ottieni diff
-    console.log('📊 Estrazione diff...');
-    const diffs = await getDiffsForFiles(changedFiles, config.fromCommit, config.toCommit);
+    console.log("📊 Estrazione diff...");
+    const diffs = await getDiffsForFiles(
+      changedFiles,
+      config.fromCommit,
+      config.toCommit
+    );
     console.log(`   Estratti ${diffs.length} diff\n`);
-    
+
     // 5. Costruisci contesto
-    console.log('🎯 Costruzione contesto...');
+    console.log("🎯 Costruzione contesto...");
     const context = await buildContext(commits, changedFiles, diffs);
-    
+
     // 6. Genera documentazione
-    console.log('');
+    console.log("");
     const result = await generateDocumentation(context);
-    
-    console.log('\n📄 Risultato AI:');
+
+    console.log("\n📄 Risultato AI:");
     console.log(`   ${result.summary}\n`);
-    
+
     // 7. Applica aggiornamenti
     await applyUpdates(result.updates);
-    
+
     // 8. Salva metriche
     const duration = Date.now() - startTime;
     await saveMetrics({
@@ -603,31 +638,39 @@ async function main() {
       filesChanged: changedFiles.length,
       pagesUpdated: result.updates.length,
       duration,
-      model: config.model
+      model: config.model,
     });
-    
-    console.log(`\n✅ Documentazione ${config.audience} generata con successo!`);
-    console.log(`   ${result.updates.length} file aggiornati in ${(duration/1000).toFixed(1)}s`);
-    
+
+    console.log(
+      `\n✅ Documentazione ${config.audience} generata con successo!`
+    );
+    console.log(
+      `   ${result.updates.length} file aggiornati in ${(
+        duration / 1000
+      ).toFixed(1)}s`
+    );
+
     // Output per GitHub Actions
     if (process.env.GITHUB_OUTPUT) {
       await fs.appendFile(
         process.env.GITHUB_OUTPUT,
-        `updated_files=${result.updates.map(u => u.file).join(',')}\n` +
-        `summary=${result.summary}\n` +
-        `audience=${config.audience}\n`
+        `updated_files=${result.updates.map((u) => u.file).join(",")}\n` +
+          `summary=${result.summary}\n` +
+          `audience=${config.audience}\n`
       );
     }
-    
   } catch (error) {
-    console.error('\n❌ Errore:', error.message);
-    
+    console.error("\n❌ Errore:", error.message);
+
     if (error.response) {
-      console.error('Dettagli API:', JSON.stringify(error.response.data, null, 2));
+      console.error(
+        "Dettagli API:",
+        JSON.stringify(error.response.data, null, 2)
+      );
     }
-    
-    console.error('\nStack trace:', error.stack);
-    
+
+    console.error("\nStack trace:", error.stack);
+
     process.exit(1);
   }
 }

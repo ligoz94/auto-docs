@@ -5,29 +5,29 @@ on:
   workflow_dispatch:
     inputs:
       audience:
-        description: 'Target audience per la documentazione'
+        description: "Target audience per la documentazione"
         required: true
         type: choice
         options:
-          - all          # Genera tutte e 3 le documentazioni
-          - developer    # Solo documentazione tecnica
-          - stakeholder  # Solo documentazione business
-          - customer     # Solo documentazione utente
-        default: 'all'
-      
+          - all # Genera tutte e 3 le documentazioni
+          - developer # Solo documentazione tecnica
+          - stakeholder # Solo documentazione business
+          - customer # Solo documentazione utente
+        default: "all"
+
       from_commit:
-        description: 'Commit di partenza (lascia vuoto per usare ultimo documentato)'
+        description: "Commit di partenza (lascia vuoto per usare ultimo documentato)"
         required: false
         type: string
-      
+
       to_commit:
-        description: 'Commit finale (lascia vuoto per HEAD)'
+        description: "Commit finale (lascia vuoto per HEAD)"
         required: false
         type: string
-        default: 'HEAD'
-      
+        default: "HEAD"
+
       force_regenerate:
-        description: 'Forza rigenerazione anche se non ci sono modifiche'
+        description: "Forza rigenerazione anche se non ci sono modifiche"
         required: false
         type: boolean
         default: false
@@ -40,23 +40,23 @@ jobs:
   generate-documentation:
     name: 🤖 Generate Documentation
     runs-on: ubuntu-latest
-    
+
     steps:
       # 1. Checkout del repository
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch completo per analisi commit
+          fetch-depth: 0 # Fetch completo per analisi commit
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # 2. Setup Node.js
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'scripts/package-lock.json'
-      
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "scripts/package-lock.json"
+
       # 3. Installa dipendenze
       - name: 📦 Install Dependencies
         working-directory: ./scripts
@@ -66,20 +66,20 @@ jobs:
           else
             npm install
           fi
-      
+
       # 4. Determina range di commit da analizzare
       - name: 🔍 Determine Commit Range
         id: commit_range
         run: |
           # File che traccia l'ultimo commit documentato
           TRACKING_FILE=".docs-tracking.json"
-          
+
           # Commit finale (default HEAD)
           TO_COMMIT="${{ inputs.to_commit }}"
           if [ -z "$TO_COMMIT" ] || [ "$TO_COMMIT" = "HEAD" ]; then
             TO_COMMIT=$(git rev-parse HEAD)
           fi
-          
+
           # Commit iniziale
           if [ -n "${{ inputs.from_commit }}" ]; then
             # Usato commit fornito dall'utente
@@ -94,48 +94,48 @@ jobs:
             FROM_COMMIT=$(git rev-list --max-parents=0 HEAD)
             echo "📍 First run, starting from initial commit: $FROM_COMMIT"
           fi
-          
+
           # Conta i commit nel range
           COMMIT_COUNT=$(git rev-list --count ${FROM_COMMIT}..${TO_COMMIT})
-          
+
           echo "from_commit=$FROM_COMMIT" >> $GITHUB_OUTPUT
           echo "to_commit=$TO_COMMIT" >> $GITHUB_OUTPUT
           echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
-          
+
           echo ""
           echo "📊 Commit Range Analysis:"
           echo "  From: $FROM_COMMIT"
           echo "  To:   $TO_COMMIT"
           echo "  Total commits: $COMMIT_COUNT"
           echo ""
-      
+
       # 5. Ottieni lista commit e modifiche
       - name: 📋 Get Commit Details
         id: commits
         run: |
           FROM="${{ steps.commit_range.outputs.from_commit }}"
           TO="${{ steps.commit_range.outputs.to_commit }}"
-          
+
           # Lista commit con messaggi
           echo "📝 Commit messages:"
           git log --pretty=format:"%h - %s (%an)" ${FROM}..${TO}
-          
+
           # Salva commit messages in file
           git log --pretty=format:"%h|%s|%an|%ae|%ai" ${FROM}..${TO} > /tmp/commits.txt
-          
+
           # File modificati in tutto il range
           FILES=$(git diff --name-only ${FROM}..${TO} | grep -v '^docs/' | tr '\n' ',' || true)
           echo "files_changed=$FILES" >> $GITHUB_OUTPUT
-          
+
           # Statistiche
           STATS=$(git diff --shortstat ${FROM}..${TO})
           echo "stats=$STATS" >> $GITHUB_OUTPUT
-          
+
           echo ""
           echo "📊 Changes Summary:"
           echo "$STATS"
           echo ""
-      
+
       # 6. Check se ci sono modifiche da documentare
       - name: ✅ Check if Documentation Needed
         id: check_needed
@@ -143,7 +143,7 @@ jobs:
           COMMIT_COUNT=${{ steps.commit_range.outputs.commit_count }}
           FILES="${{ steps.commits.outputs.files_changed }}"
           FORCE="${{ inputs.force_regenerate }}"
-          
+
           if [ "$FORCE" = "true" ]; then
             echo "needed=true" >> $GITHUB_OUTPUT
             echo "✅ Documentation forced by user"
@@ -157,62 +157,62 @@ jobs:
             echo "needed=true" >> $GITHUB_OUTPUT
             echo "✅ Documentation needed: $COMMIT_COUNT commits with changes"
           fi
-      
+
       # 7. Genera documentazione DEVELOPER
       - name: 👨‍💻 Generate Developer Documentation
         if: steps.check_needed.outputs.needed == 'true' && (inputs.audience == 'all' || inputs.audience == 'developer')
         working-directory: ./scripts
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          AUDIENCE: 'developer'
+          AUDIENCE: "developer"
           FROM_COMMIT: ${{ steps.commit_range.outputs.from_commit }}
           TO_COMMIT: ${{ steps.commit_range.outputs.to_commit }}
-          DOCS_PATH: '../docs/developer'
-          AI_MODEL: 'anthropic/claude-3.5-sonnet'
+          DOCS_PATH: "../docs/developer"
+          AI_MODEL: "openai/gpt-oss-20b:free"
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           echo "📝 Generating DEVELOPER documentation..."
           npm run docs:generate
-      
+
       # 8. Genera documentazione STAKEHOLDER
       - name: 💼 Generate Stakeholder Documentation
         if: steps.check_needed.outputs.needed == 'true' && (inputs.audience == 'all' || inputs.audience == 'stakeholder')
         working-directory: ./scripts
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          AUDIENCE: 'stakeholder'
+          AUDIENCE: "stakeholder"
           FROM_COMMIT: ${{ steps.commit_range.outputs.from_commit }}
           TO_COMMIT: ${{ steps.commit_range.outputs.to_commit }}
-          DOCS_PATH: '../docs/stakeholder'
-          AI_MODEL: 'anthropic/claude-3.5-sonnet'
+          DOCS_PATH: "../docs/stakeholder"
+          AI_MODEL: "openai/gpt-oss-20b:free"
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           echo "📝 Generating STAKEHOLDER documentation..."
           npm run docs:generate
-      
+
       # 9. Genera documentazione CUSTOMER
       - name: 👥 Generate Customer Documentation
         if: steps.check_needed.outputs.needed == 'true' && (inputs.audience == 'all' || inputs.audience == 'customer')
         working-directory: ./scripts
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          AUDIENCE: 'customer'
+          AUDIENCE: "customer"
           FROM_COMMIT: ${{ steps.commit_range.outputs.from_commit }}
           TO_COMMIT: ${{ steps.commit_range.outputs.to_commit }}
-          DOCS_PATH: '../docs/customer'
-          AI_MODEL: 'anthropic/claude-3.5-sonnet'
+          DOCS_PATH: "../docs/customer"
+          AI_MODEL: "openai/gpt-oss-20b:free"
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           echo "📝 Generating CUSTOMER documentation..."
           npm run docs:generate
-      
+
       # 10. Aggiorna tracking file
       - name: 💾 Update Documentation Tracking
         if: steps.check_needed.outputs.needed == 'true'
         run: |
           TRACKING_FILE=".docs-tracking.json"
           TO_COMMIT="${{ steps.commit_range.outputs.to_commit }}"
-          
+
           # Crea o aggiorna tracking file
           cat > $TRACKING_FILE <<EOF
           {
@@ -227,13 +227,13 @@ jobs:
             "audiences": ["${{ inputs.audience }}"]
           }
           EOF
-          
+
           echo "✅ Updated tracking file:"
           cat $TRACKING_FILE
-          
+
           # Commit tracking file
           git add $TRACKING_FILE
-      
+
       # 11. Commit tutte le modifiche
       - name: 💾 Commit Documentation Changes
         id: commit_docs
@@ -241,11 +241,11 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          
+
           # Aggiungi tutte le modifiche docs
           git add docs/
           git add .docs-tracking.json
-          
+
           # Check se ci sono modifiche
           if git diff --staged --quiet; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -258,20 +258,20 @@ jobs:
             git commit -m "docs: update ${AUDIENCE} documentation
 
           Updated documentation for ${AUDIENCE} audience.
-          
+
           Commits analyzed: ${COMMIT_COUNT}
           Range: ${{ steps.commit_range.outputs.from_commit }}...${{ steps.commit_range.outputs.to_commit }}
-          
+
           Changes:
           ${{ steps.commits.outputs.stats }}
-          
+
           Generated by workflow: ${{ github.run_id }}
           Triggered by: @${{ github.actor }}"
             
             echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "✅ Changes committed"
           fi
-      
+
       # 12. Crea Pull Request
       - name: 📤 Create Documentation Pull Request
         if: steps.commit_docs.outputs.has_changes == 'true'
@@ -282,81 +282,81 @@ jobs:
           branch: docs/update-${{ inputs.audience }}-${{ github.run_number }}
           delete-branch: true
           base: main
-          
-          title: '📚 [Docs] Update ${{ inputs.audience }} documentation'
-          
+
+          title: "📚 [Docs] Update ${{ inputs.audience }} documentation"
+
           body: |
             ## 📚 Documentazione Aggiornata - ${{ inputs.audience }}
-            
+
             Questa PR contiene gli aggiornamenti alla documentazione generati automaticamente.
-            
+
             ### 📊 Informazioni
-            
+
             - **Audience**: `${{ inputs.audience }}`
             - **Commit analizzati**: ${{ steps.commit_range.outputs.commit_count }}
             - **Range**: `${{ steps.commit_range.outputs.from_commit }}...${{ steps.commit_range.outputs.to_commit }}`
             - **Triggered by**: @${{ github.actor }}
             - **Workflow run**: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            
+
             ### 📈 Statistiche Modifiche
-            
+
             ```
             ${{ steps.commits.outputs.stats }}
             ```
-            
+
             ### 📝 Commit Analizzati
-            
+
             <details>
             <summary>Vedi lista completa commit</summary>
-            
+
             ```
             $(git log --pretty=format:"%h - %s (%an)" ${{ steps.commit_range.outputs.from_commit }}..${{ steps.commit_range.outputs.to_commit }})
             ```
-            
+
             </details>
-            
+
             ### 🎯 Documentazione Generata
-            
+
             ${{ inputs.audience == 'all' && '- ✅ Developer (tecnica)' || '' }}
             ${{ inputs.audience == 'all' && '- ✅ Stakeholder (business)' || '' }}
             ${{ inputs.audience == 'all' && '- ✅ Customer (user guide)' || '' }}
             ${{ inputs.audience == 'developer' && '- ✅ Developer (tecnica)' || '' }}
             ${{ inputs.audience == 'stakeholder' && '- ✅ Stakeholder (business)' || '' }}
             ${{ inputs.audience == 'customer' && '- ✅ Customer (user guide)' || '' }}
-            
+
             ### ✅ Checklist Review
-            
+
             - [ ] La documentazione è accurata e completa
             - [ ] Il tono è appropriato per l'audience
             - [ ] Gli esempi sono corretti e funzionanti
             - [ ] Non ci sono informazioni sensibili
             - [ ] I link funzionano correttamente
-            
+
             ### 📍 Prossimo Aggiornamento
-            
+
             Il prossimo aggiornamento della documentazione partirà dal commit:
             ```
             ${{ steps.commit_range.outputs.to_commit }}
             ```
-            
+
             ---
-            
+
             <sub>🤖 Generato automaticamente da [Multi-Audience Docs Framework]</sub>
-          
+
           labels: |
             documentation
             automated
             ${{ inputs.audience }}
-          
+
           assignees: ${{ github.actor }}
-      
+
       # 13. Genera summary del workflow
       - name: 📊 Workflow Summary
         if: always()
         run: |
           echo "# 📚 Documentation Generation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ steps.check_needed.outputs.needed }}" = "false" ]; then
             echo "## ℹ️ No Documentation Generated" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -377,13 +377,13 @@ jobs:
             echo "${{ steps.commits.outputs.stats }}" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Triggered by**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
           echo "**Workflow**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
-      
+
       # 14. Upload artifacts per debug
       - name: 📦 Upload Logs
         if: always()

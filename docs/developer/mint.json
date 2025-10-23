@@ -1,0 +1,35 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Developer Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.example.com"
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction"
+      ]
+    },
+    {
+      "group": "Authentication",
+      "pages": [
+        "authentication/login-2fa"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/yourname/yourrepo"
+  }
+}
