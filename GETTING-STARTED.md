@@ -24,6 +24,7 @@ npx mintlify@latest init
 ```
 
 Questo crea:
+
 ```
 docs/
 ├── mint.json           # Configurazione principale
@@ -57,24 +58,15 @@ docs/
   "navigation": [
     {
       "group": "Introduzione",
-      "pages": [
-        "introduction",
-        "quickstart"
-      ]
+      "pages": ["introduction", "quickstart"]
     },
     {
       "group": "Guide",
-      "pages": [
-        "guides/installation",
-        "guides/configuration"
-      ]
+      "pages": ["guides/installation", "guides/configuration"]
     },
     {
       "group": "API Reference",
-      "pages": [
-        "api-reference/overview",
-        "api-reference/authentication"
-      ]
+      "pages": ["api-reference/overview", "api-reference/authentication"]
     }
   ]
 }
@@ -112,6 +104,7 @@ npx mintlify deploy
 ### 2.2 Aggiungi credito
 
 OpenRouter funziona a consumo. Aggiungi almeno $5 per iniziare:
+
 - Vai su **Credits** > **Add Credits**
 - Claude 3.5 Sonnet costa ~$3 per 1M input tokens
 
@@ -146,49 +139,46 @@ npm install openai simple-git gray-matter marked
 
 ### 3.2 Crea `doc-agent.js`
 
-```javascript
+````javascript
 #!/usr/bin/env node
 
-import OpenAI from 'openai';
-import simpleGit from 'simple-git';
-import fs from 'fs/promises';
-import path from 'path';
-import matter from 'gray-matter';
+import OpenAI from "openai";
+import simpleGit from "simple-git";
+import fs from "fs/promises";
+import path from "path";
+import matter from "gray-matter";
 
 const git = simpleGit();
 
 // Configurazione
 const config = {
-  model: process.env.AI_MODEL || 'anthropic/claude-3.5-sonnet',
-  docsPath: process.env.DOCS_PATH || './docs',
-  maxTokens: parseInt(process.env.MAX_TOKENS || '4000'),
-  temperature: parseFloat(process.env.TEMPERATURE || '0.3')
+  model: process.env.AI_MODEL || "anthropic/claude-3.5-sonnet",
+  docsPath: process.env.DOCS_PATH || "./docs",
+  maxTokens: parseInt(process.env.MAX_TOKENS || "4000"),
+  temperature: parseFloat(process.env.TEMPERATURE || "0.3"),
 };
 
 // Client OpenRouter (usa SDK OpenAI compatibile)
 const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
+  baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
   defaultHeaders: {
-    'HTTP-Referer': process.env.GITHUB_REPOSITORY || 'https://github.com',
-    'X-Title': 'Auto Documentation Agent'
-  }
+    "HTTP-Referer": process.env.GITHUB_REPOSITORY || "https://github.com",
+    "X-Title": "Auto Documentation Agent",
+  },
 });
 
 /**
  * Ottiene i file modificati dalla PR
  */
-async function getChangedFiles(baseBranch = 'main') {
+async function getChangedFiles(baseBranch = "main") {
   try {
-    await git.fetch(['origin', baseBranch]);
-    const diff = await git.diff([
-      `origin/${baseBranch}...HEAD`,
-      '--name-only'
-    ]);
-    
-    return diff.split('\n').filter(Boolean);
+    await git.fetch(["origin", baseBranch]);
+    const diff = await git.diff([`origin/${baseBranch}...HEAD`, "--name-only"]);
+
+    return diff.split("\n").filter(Boolean);
   } catch (error) {
-    console.error('Errore nel recupero file modificati:', error);
+    console.error("Errore nel recupero file modificati:", error);
     return [];
   }
 }
@@ -196,22 +186,18 @@ async function getChangedFiles(baseBranch = 'main') {
 /**
  * Ottiene il diff dettagliato per i file
  */
-async function getFileDiff(files, baseBranch = 'main') {
+async function getFileDiff(files, baseBranch = "main") {
   const diffs = {};
-  
+
   for (const file of files) {
     try {
-      const diff = await git.diff([
-        `origin/${baseBranch}...HEAD`,
-        '--',
-        file
-      ]);
+      const diff = await git.diff([`origin/${baseBranch}...HEAD`, "--", file]);
       diffs[file] = diff;
     } catch (error) {
       console.warn(`Impossibile ottenere diff per ${file}`);
     }
   }
-  
+
   return diffs;
 }
 
@@ -220,16 +206,16 @@ async function getFileDiff(files, baseBranch = 'main') {
  */
 async function readSourceFiles(files) {
   const contents = {};
-  
+
   for (const file of files) {
     try {
-      const content = await fs.readFile(file, 'utf-8');
+      const content = await fs.readFile(file, "utf-8");
       contents[file] = content;
     } catch (error) {
       console.warn(`Impossibile leggere ${file}`);
     }
   }
-  
+
   return contents;
 }
 
@@ -239,28 +225,30 @@ async function readSourceFiles(files) {
 async function findRelatedDocs(changedFiles) {
   const docsDir = config.docsPath;
   const relatedDocs = [];
-  
+
   try {
     const allDocs = await findAllMdxFiles(docsDir);
-    
+
     // Logica semplice: cerca file con nomi simili
     for (const docFile of allDocs) {
-      const docName = path.basename(docFile, '.mdx');
-      
+      const docName = path.basename(docFile, ".mdx");
+
       for (const changedFile of changedFiles) {
         const fileName = path.basename(changedFile, path.extname(changedFile));
-        
-        if (docName.toLowerCase().includes(fileName.toLowerCase()) ||
-            fileName.toLowerCase().includes(docName.toLowerCase())) {
+
+        if (
+          docName.toLowerCase().includes(fileName.toLowerCase()) ||
+          fileName.toLowerCase().includes(docName.toLowerCase())
+        ) {
           relatedDocs.push(docFile);
           break;
         }
       }
     }
-    
+
     return [...new Set(relatedDocs)];
   } catch (error) {
-    console.error('Errore nella ricerca documenti:', error);
+    console.error("Errore nella ricerca documenti:", error);
     return [];
   }
 }
@@ -270,21 +258,21 @@ async function findRelatedDocs(changedFiles) {
  */
 async function findAllMdxFiles(dir) {
   const files = [];
-  
+
   async function walk(directory) {
     const entries = await fs.readdir(directory, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = path.join(directory, entry.name);
-      
+
       if (entry.isDirectory()) {
         await walk(fullPath);
-      } else if (entry.name.endsWith('.mdx')) {
+      } else if (entry.name.endsWith(".mdx")) {
         files.push(fullPath);
       }
     }
   }
-  
+
   await walk(dir);
   return files;
 }
@@ -294,20 +282,20 @@ async function findAllMdxFiles(dir) {
  */
 async function readDocPages(docFiles) {
   const contents = {};
-  
+
   for (const file of docFiles) {
     try {
-      const content = await fs.readFile(file, 'utf-8');
+      const content = await fs.readFile(file, "utf-8");
       const parsed = matter(content);
       contents[file] = {
         frontmatter: parsed.data,
-        content: parsed.content
+        content: parsed.content,
       };
     } catch (error) {
       console.warn(`Impossibile leggere ${file}`);
     }
   }
-  
+
   return contents;
 }
 
@@ -315,8 +303,9 @@ async function readDocPages(docFiles) {
  * Costruisce il prompt per l'AI
  */
 function buildPrompt(context) {
-  const { changedFiles, diffs, sourceContents, relatedDocs, docContents } = context;
-  
+  const { changedFiles, diffs, sourceContents, relatedDocs, docContents } =
+    context;
+
   return `Sei un esperto di documentazione tecnica specializzato in Mintlify.
 
 Il tuo compito è analizzare le modifiche al codice e aggiornare/creare la documentazione di conseguenza.
@@ -331,19 +320,27 @@ Il tuo compito è analizzare le modifiche al codice e aggiornare/creare la docum
 7. Aggiorna il frontmatter YAML se necessario
 
 ## File modificati:
-${changedFiles.map(f => `- ${f}`).join('\n')}
+${changedFiles.map((f) => `- ${f}`).join("\n")}
 
 ## Diff delle modifiche:
-${Object.entries(diffs).map(([file, diff]) => `
+${Object.entries(diffs)
+  .map(
+    ([file, diff]) => `
 ### ${file}
 \`\`\`diff
-${diff.slice(0, 2000)}${diff.length > 2000 ? '\n... (troncato)' : ''}
+${diff.slice(0, 2000)}${diff.length > 2000 ? "\n... (troncato)" : ""}
 \`\`\`
-`).join('\n')}
+`
+  )
+  .join("\n")}
 
-${Object.keys(docContents).length > 0 ? `
+${
+  Object.keys(docContents).length > 0
+    ? `
 ## Documentazione esistente da aggiornare:
-${Object.entries(docContents).map(([file, doc]) => `
+${Object.entries(docContents)
+  .map(
+    ([file, doc]) => `
 ### ${file}
 **Frontmatter:**
 \`\`\`yaml
@@ -352,10 +349,16 @@ ${JSON.stringify(doc.frontmatter, null, 2)}
 
 **Contenuto:**
 \`\`\`markdown
-${doc.content.slice(0, 1500)}${doc.content.length > 1500 ? '\n... (troncato)' : ''}
+${doc.content.slice(0, 1500)}${
+      doc.content.length > 1500 ? "\n... (troncato)" : ""
+    }
 \`\`\`
-`).join('\n')}
-` : '## Nessuna documentazione esistente trovata. Crea nuove pagine se necessario.'}
+`
+  )
+  .join("\n")}
+`
+    : "## Nessuna documentazione esistente trovata. Crea nuove pagine se necessario."
+}
 
 ## Il tuo compito:
 1. Analizza le modifiche al codice
@@ -388,34 +391,36 @@ Genera SOLO il JSON, nient'altro.`;
  * Chiama l'AI per generare la documentazione
  */
 async function generateDocumentation(prompt) {
-  console.log('📡 Chiamata a OpenRouter...');
-  
+  console.log("📡 Chiamata a OpenRouter...");
+
   const response = await openai.chat.completions.create({
     model: config.model,
     messages: [
       {
-        role: 'system',
-        content: 'Sei un esperto di documentazione tecnica. Rispondi SOLO con JSON valido.'
+        role: "system",
+        content:
+          "Sei un esperto di documentazione tecnica. Rispondi SOLO con JSON valido.",
       },
       {
-        role: 'user',
-        content: prompt
-      }
+        role: "user",
+        content: prompt,
+      },
     ],
     temperature: config.temperature,
-    max_tokens: config.maxTokens
+    max_tokens: config.maxTokens,
   });
-  
+
   const content = response.choices[0].message.content;
-  
+
   // Estrai JSON dalla risposta
-  const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
-                    content.match(/```\n([\s\S]*?)\n```/);
-  
+  const jsonMatch =
+    content.match(/```json\n([\s\S]*?)\n```/) ||
+    content.match(/```\n([\s\S]*?)\n```/);
+
   if (jsonMatch) {
     return JSON.parse(jsonMatch[1]);
   }
-  
+
   // Prova a parsare direttamente
   return JSON.parse(content);
 }
@@ -425,19 +430,19 @@ async function generateDocumentation(prompt) {
  */
 async function applyUpdates(updates) {
   console.log(`📝 Applicazione di ${updates.length} aggiornamenti...`);
-  
+
   for (const update of updates) {
     const { file, action, content, reason } = update;
-    
-    console.log(`  ${action === 'create' ? '➕' : '✏️'} ${file}`);
+
+    console.log(`  ${action === "create" ? "➕" : "✏️"} ${file}`);
     console.log(`     Motivo: ${reason}`);
-    
+
     // Crea directory se non esiste
     const dir = path.dirname(file);
     await fs.mkdir(dir, { recursive: true });
-    
+
     // Scrivi il file
-    await fs.writeFile(file, content, 'utf-8');
+    await fs.writeFile(file, content, "utf-8");
   }
 }
 
@@ -446,120 +451,115 @@ async function applyUpdates(updates) {
  */
 async function updateMintJson(changes) {
   if (!changes || Object.keys(changes).length === 0) {
-    console.log('ℹ️  Nessuna modifica a mint.json');
+    console.log("ℹ️  Nessuna modifica a mint.json");
     return;
   }
-  
-  console.log('📋 Aggiornamento mint.json...');
-  
-  const mintPath = path.join(config.docsPath, 'mint.json');
-  const mintContent = await fs.readFile(mintPath, 'utf-8');
+
+  console.log("📋 Aggiornamento mint.json...");
+
+  const mintPath = path.join(config.docsPath, "mint.json");
+  const mintContent = await fs.readFile(mintPath, "utf-8");
   const mintJson = JSON.parse(mintContent);
-  
+
   // Applica modifiche (merge)
   Object.assign(mintJson, changes);
-  
-  await fs.writeFile(
-    mintPath,
-    JSON.stringify(mintJson, null, 2),
-    'utf-8'
-  );
+
+  await fs.writeFile(mintPath, JSON.stringify(mintJson, null, 2), "utf-8");
 }
 
 /**
  * Main function
  */
 async function main() {
-  console.log('🤖 Auto Documentation Agent');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-  
+  console.log("🤖 Auto Documentation Agent");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
   try {
     // 1. Ottieni file modificati
-    console.log('📁 Analisi file modificati...');
-    const baseBranch = process.env.BASE_BRANCH || 'main';
+    console.log("📁 Analisi file modificati...");
+    const baseBranch = process.env.BASE_BRANCH || "main";
     const changedFiles = await getChangedFiles(baseBranch);
-    
+
     if (changedFiles.length === 0) {
-      console.log('✅ Nessun file modificato rilevato');
+      console.log("✅ Nessun file modificato rilevato");
       return;
     }
-    
+
     console.log(`   Trovati ${changedFiles.length} file modificati\n`);
-    
+
     // Filtra file docs (per evitare loop infiniti)
-    const filteredFiles = changedFiles.filter(f => !f.startsWith('docs/'));
-    
+    const filteredFiles = changedFiles.filter((f) => !f.startsWith("docs/"));
+
     if (filteredFiles.length === 0) {
-      console.log('✅ Solo file docs modificati, skip');
+      console.log("✅ Solo file docs modificati, skip");
       return;
     }
-    
+
     // 2. Ottieni diff
-    console.log('📊 Estrazione diff...');
+    console.log("📊 Estrazione diff...");
     const diffs = await getFileDiff(filteredFiles, baseBranch);
-    
+
     // 3. Leggi contenuto file sorgente
-    console.log('📖 Lettura file sorgente...');
+    console.log("📖 Lettura file sorgente...");
     const sourceContents = await readSourceFiles(filteredFiles);
-    
+
     // 4. Trova documenti correlati
-    console.log('🔍 Ricerca documenti correlati...');
+    console.log("🔍 Ricerca documenti correlati...");
     const relatedDocs = await findRelatedDocs(filteredFiles);
     console.log(`   Trovati ${relatedDocs.length} documenti correlati\n`);
-    
+
     // 5. Leggi documenti esistenti
     const docContents = await readDocPages(relatedDocs);
-    
+
     // 6. Costruisci prompt
-    console.log('🎯 Costruzione prompt...');
+    console.log("🎯 Costruzione prompt...");
     const prompt = buildPrompt({
       changedFiles: filteredFiles,
       diffs,
       sourceContents,
       relatedDocs,
-      docContents
+      docContents,
     });
-    
+
     // 7. Genera documentazione
     const result = await generateDocumentation(prompt);
-    
-    console.log('\n📄 Risultato AI:');
+
+    console.log("\n📄 Risultato AI:");
     console.log(`   ${result.summary}\n`);
-    
+
     // 8. Applica aggiornamenti
     await applyUpdates(result.updates);
-    
+
     // 9. Aggiorna mint.json
     if (result.mintJsonChanges) {
       await updateMintJson(result.mintJsonChanges);
     }
-    
-    console.log('\n✅ Documentazione aggiornata con successo!');
+
+    console.log("\n✅ Documentazione aggiornata con successo!");
     console.log(`   ${result.updates.length} file modificati`);
-    
+
     // Output per GitHub Actions
     if (process.env.GITHUB_OUTPUT) {
       await fs.appendFile(
         process.env.GITHUB_OUTPUT,
-        `updated_files=${result.updates.map(u => u.file).join(',')}\n` +
-        `summary=${result.summary}\n`
+        `updated_files=${result.updates.map((u) => u.file).join(",")}\n` +
+          `summary=${result.summary}\n`
       );
     }
-    
   } catch (error) {
-    console.error('❌ Errore:', error.message);
-    
+    console.error("❌ Errore:", error.message);
+
     if (error.response) {
-      console.error('Dettagli API:', error.response.data);
+      console.error("Dettagli API:", error.response.data);
     }
-    
+
     process.exit(1);
   }
 }
 
 // Esegui
 main();
-```
+````
 
 ### 3.3 Aggiungi script al `package.json`
 
@@ -613,20 +613,20 @@ on:
       - develop
     paths:
       # File che triggerano la documentazione
-      - '**.ts'
-      - '**.tsx'
-      - '**.js'
-      - '**.jsx'
-      - '**.py'
-      - '**.go'
-      - '**.java'
-      
+      - "**.ts"
+      - "**.tsx"
+      - "**.js"
+      - "**.jsx"
+      - "**.py"
+      - "**.go"
+      - "**.java"
+
       # Escludi per evitare loop infiniti
-      - '!docs/**'
-      - '!.github/**'
-      - '!node_modules/**'
-      - '!dist/**'
-      - '!build/**'
+      - "!docs/**"
+      - "!.github/**"
+      - "!node_modules/**"
+      - "!dist/**"
+      - "!build/**"
 
 jobs:
   update-docs:
@@ -635,51 +635,51 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
       # 1. Checkout con storia completa
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Serve per git diff
+          fetch-depth: 0 # Serve per git diff
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # 2. Setup Node.js
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'scripts/package-lock.json'
-      
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "scripts/package-lock.json"
+
       # 3. Installa dipendenze script
       - name: 📦 Install Dependencies
         working-directory: ./scripts
         run: npm ci
-      
+
       # 4. Fetch branch base per diff
       - name: 🔄 Fetch Base Branch
         run: |
           git fetch origin ${{ github.event.pull_request.base.ref }}
-      
+
       # 5. Esegui agente documentazione
       - name: 🤖 Run Documentation Agent
         working-directory: ./scripts
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
-          DOCS_PATH: '../docs'
-          AI_MODEL: 'anthropic/claude-3.5-sonnet'
+          DOCS_PATH: "../docs"
+          AI_MODEL: "openai/gpt-oss-20b:free"
           GITHUB_OUTPUT: ${{ github.output }}
         run: npm run docs:update
-      
+
       # 6. Commit e Push modifiche
       - name: 💾 Commit Documentation Changes
         id: commit
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          
+
           # Controlla se ci sono modifiche
           if [[ -n $(git status -s docs/) ]]; then
             git add docs/
@@ -689,7 +689,7 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "ℹ️ No documentation changes needed"
           fi
-      
+
       # 7. Push su branch separato e crea PR
       - name: 📤 Create Documentation PR
         if: steps.commit.outputs.has_changes == 'true'
@@ -698,35 +698,35 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
             docs: auto-update from PR #${{ github.event.pull_request.number }}
-            
+
             Generated by AI documentation agent
           branch: docs/auto-${{ github.event.pull_request.number }}
           delete-branch: true
-          title: '📚 [Auto] Update docs for PR #${{ github.event.pull_request.number }}'
+          title: "📚 [Auto] Update docs for PR #${{ github.event.pull_request.number }}"
           body: |
             ## 🤖 Documentazione Automatica
-            
+
             Questa PR è stata generata automaticamente dall'agente di documentazione.
-            
+
             ### Sorgente
             - **PR originale**: #${{ github.event.pull_request.number }}
             - **Branch**: `${{ github.event.pull_request.head.ref }}`
             - **Commit**: ${{ github.event.pull_request.head.sha }}
-            
+
             ### Modifiche
             ${{ steps.run-agent.outputs.summary }}
-            
+
             ### File aggiornati
             ${{ steps.run-agent.outputs.updated_files }}
-            
+
             ---
-            
+
             ⚠️ **Review richiesta**: Controlla che la documentazione sia accurata prima del merge.
           labels: |
             documentation
             automated
           assignees: ${{ github.event.pull_request.user.login }}
-      
+
       # 8. Commenta sulla PR originale
       - name: 💬 Comment on Original PR
         if: steps.commit.outputs.has_changes == 'true'
@@ -767,10 +767,7 @@ jobs:
 ```json
 {
   "model": "anthropic/claude-3.5-sonnet",
-  "fallbackModels": [
-    "openai/gpt-4-turbo",
-    "google/gemini-pro-1.5"
-  ],
+  "fallbackModels": ["openai/gpt-4-turbo", "google/gemini-pro-1.5"],
   "temperature": 0.3,
   "maxTokens": 4000,
   "language": "it",
@@ -782,10 +779,7 @@ jobs:
     "useMintlifyComponents": true
   },
   "triggers": {
-    "extensions": [
-      "ts", "tsx", "js", "jsx",
-      "py", "go", "java", "rs"
-    ],
+    "extensions": ["ts", "tsx", "js", "jsx", "py", "go", "java", "rs"],
     "excludePaths": [
       "node_modules/**",
       "dist/**",
@@ -932,20 +926,17 @@ git pull
 Aggiungi script di monitoring in `scripts/monitor.js`:
 
 ```javascript
-import fs from 'fs/promises';
+import fs from "fs/promises";
 
 export async function logMetrics(data) {
   const metrics = {
     timestamp: new Date().toISOString(),
-    ...data
+    ...data,
   };
-  
-  await fs.appendFile(
-    'metrics.jsonl',
-    JSON.stringify(metrics) + '\n'
-  );
-  
-  console.log('📊 Metrics:', metrics);
+
+  await fs.appendFile("metrics.jsonl", JSON.stringify(metrics) + "\n");
+
+  console.log("📊 Metrics:", metrics);
 }
 
 // Uso in doc-agent.js
@@ -954,7 +945,7 @@ await logMetrics({
   pagesUpdated: result.updates.length,
   tokensUsed: response.usage.total_tokens,
   model: config.model,
-  duration: endTime - startTime
+  duration: endTime - startTime,
 });
 ```
 
@@ -1003,7 +994,7 @@ Verifica di aver completato:
 
 ## 🎉 Congratulazioni!
 
-Ora hai un sistema completamente automatizzato per la documentazione! 
+Ora hai un sistema completamente automatizzato per la documentazione!
 
 ### Prossimi passi:
 

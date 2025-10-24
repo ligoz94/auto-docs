@@ -79,17 +79,19 @@ export MAX_TOKENS="4000"
 ## 🎯 Workflow GitHub Actions
 
 ### Trigger eventi:
+
 ```yaml
 on:
   pull_request:
     branches: [main, develop]
     paths:
-      - '**.ts'
-      - '**.js'
-      - '!docs/**'  # IMPORTANTE: evita loop!
+      - "**.ts"
+      - "**.js"
+      - "!docs/**" # IMPORTANTE: evita loop!
 ```
 
 ### Jobs principali:
+
 1. **Checkout** - Scarica codice
 2. **Setup** - Node.js + dipendenze
 3. **Analyze** - Rileva modifiche
@@ -103,33 +105,36 @@ on:
 
 ### OpenRouter - Raccomandati:
 
-| Modello | Costo/1M tokens | Best for |
-|---------|-----------------|----------|
-| `anthropic/claude-3.5-sonnet` | $3 input / $15 output | **Qualità massima** ⭐ |
-| `openai/gpt-4-turbo` | $10 input / $30 output | Versatilità |
-| `google/gemini-pro-1.5` | $0.35 input / $1.05 output | **Budget** 💰 |
-| `anthropic/claude-3-haiku` | $0.25 input / $1.25 output | Velocità |
+| Modello                       | Costo/1M tokens            | Best for               |
+| ----------------------------- | -------------------------- | ---------------------- |
+| `anthropic/claude-3.5-sonnet` | $3 input / $15 output      | **Qualità massima** ⭐ |
+| `openai/gpt-4-turbo`          | $10 input / $30 output     | Versatilità            |
+| `google/gemini-pro-1.5`       | $0.35 input / $1.05 output | **Budget** 💰          |
+| `anthropic/claude-3-haiku`    | $0.25 input / $1.25 output | Velocità               |
 
 ### Come cambiare modello:
 
 **Nel config file:**
+
 ```json
 {
   "ai": {
-    "model": "google/gemini-pro-1.5"
+    "model": "openai/gpt-oss-20b:free"
   }
 }
 ```
 
 **Come env variable:**
+
 ```bash
-export AI_MODEL="google/gemini-pro-1.5"
+export AI_MODEL="openai/gpt-oss-20b:free"
 ```
 
 **Nel workflow:**
+
 ```yaml
 env:
-  AI_MODEL: 'google/gemini-pro-1.5'
+  AI_MODEL: "openai/gpt-oss-20b:free"
 ```
 
 ---
@@ -137,40 +142,40 @@ env:
 ## 📝 Mintlify - Componenti Comuni
 
 ### Tip
+
 ```mdx
-<Tip>
-  Questo è un suggerimento utile!
-</Tip>
+<Tip>Questo è un suggerimento utile!</Tip>
 ```
 
 ### Warning
+
 ```mdx
-<Warning>
-  Attenzione: Breaking change!
-</Warning>
+<Warning>Attenzione: Breaking change!</Warning>
 ```
 
 ### Code Group
-```mdx
+
+````mdx
 <CodeGroup>
 ```typescript TypeScript
 const example = "code";
-```
+````
 
 ```javascript JavaScript
 const example = "code";
 ```
+
 </CodeGroup>
 ```
 
 ### Accordion
+
 ```mdx
-<Accordion title="Dettagli avanzati">
-  Contenuto collassabile qui
-</Accordion>
+<Accordion title="Dettagli avanzati">Contenuto collassabile qui</Accordion>
 ```
 
 ### Param Field
+
 ```mdx
 <ParamField path="userId" type="string" required>
   L'ID univoco dell'utente
@@ -182,6 +187,7 @@ const example = "code";
 ## 🔧 Troubleshooting Rapido
 
 ### Workflow non parte
+
 ```bash
 # Verifica permessi
 Settings → Actions → General → Workflow permissions
@@ -190,6 +196,7 @@ Settings → Actions → General → Workflow permissions
 ```
 
 ### API Error 401
+
 ```bash
 # Verifica API key
 echo $OPENROUTER_API_KEY
@@ -200,6 +207,7 @@ gh secret set OPENROUTER_API_KEY --body "YOUR_KEY"
 ```
 
 ### Nessuna modifica generata
+
 ```bash
 # 1. Controlla che i file trigger siano corretti
 # 2. Verifica che non siano in exclude paths
@@ -212,10 +220,11 @@ cd scripts && npm run docs:update
 ```
 
 ### Loop infiniti
+
 ```yaml
 # Assicurati di escludere docs/
 paths:
-  - '!docs/**'  # CRITICO!
+  - "!docs/**" # CRITICO!
 ```
 
 ---
@@ -223,6 +232,7 @@ paths:
 ## 📊 Monitoring Veloce
 
 ### Check costi OpenRouter:
+
 ```bash
 # Visita: https://openrouter.ai/activity
 # O usa script:
@@ -231,12 +241,14 @@ curl https://openrouter.ai/api/v1/usage \
 ```
 
 ### Check workflow status:
+
 ```bash
 gh run list --workflow=auto-docs.yml
 gh run view WORKFLOW_ID
 ```
 
 ### Metriche locali:
+
 ```bash
 # Se usi il monitoring nel script
 cat scripts/metrics.jsonl | jq .
@@ -247,23 +259,26 @@ cat scripts/metrics.jsonl | jq .
 ## 🎨 Personalizzazioni Comuni
 
 ### Cambia lingua:
+
 ```json
 {
   "documentation": {
-    "language": "en"  // it, en, es, fr, de
+    "language": "en" // it, en, es, fr, de
   }
 }
 ```
 
 ### Aggiungi file types:
+
 ```yaml
 paths:
-  - '**.rs'   # Rust
-  - '**.kt'   # Kotlin
-  - '**.swift' # Swift
+  - "**.rs" # Rust
+  - "**.kt" # Kotlin
+  - "**.swift" # Swift
 ```
 
 ### Custom prompt:
+
 ```javascript
 // scripts/prompt-templates.js
 export const SYSTEM_PROMPT = `
@@ -285,34 +300,37 @@ export const SYSTEM_PROMPT = `
 ## 💡 Tips & Tricks
 
 ### Risparmia token
+
 ```json
 {
   "analysis": {
     "contextWindow": {
-      "maxFileSizeBytes": 50000,  // Ridotto
-      "maxFilesPerRequest": 5     // Ridotto
+      "maxFileSizeBytes": 50000, // Ridotto
+      "maxFilesPerRequest": 5 // Ridotto
     }
   }
 }
 ```
 
 ### Velocizza esecuzione
+
 ```json
 {
   "ai": {
-    "model": "anthropic/claude-3-haiku",  // Più veloce
-    "maxTokens": 2000  // Meno output
+    "model": "anthropic/claude-3-haiku", // Più veloce
+    "maxTokens": 2000 // Meno output
   }
 }
 ```
 
 ### Migliora qualità
+
 ```json
 {
   "ai": {
-    "model": "anthropic/claude-3.5-sonnet",  // Migliore
-    "temperature": 0.2,  // Più deterministico
-    "maxTokens": 6000    // Output più lungo
+    "model": "anthropic/claude-3.5-sonnet", // Migliore
+    "temperature": 0.2, // Più deterministico
+    "maxTokens": 6000 // Output più lungo
   }
 }
 ```
@@ -322,11 +340,13 @@ export const SYSTEM_PROMPT = `
 ## 🆘 Help
 
 ### Supporto:
+
 - 📧 Email: support@tuoprogetto.com
 - 💬 Discord: [Join Server](https://discord.gg/...)
 - 🐛 Issues: https://github.com/tuo-repo/issues
 
 ### Documentazione completa:
+
 - 📘 [Getting Started Guide](./GETTING-STARTED.md)
 - 🏗️ [Architecture Blueprint](./BLUEPRINT.md)
 - 📖 [README](./README.md)
