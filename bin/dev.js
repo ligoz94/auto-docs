@@ -18,12 +18,13 @@ export async function dev(audience, options) {
 
     let devCommand = frameworkConfig.dev;
 
-    // Add port if specified
-    if (options.port && framework !== 'mintlify') {
+    // Add port if specified (default 3000)
+    const port = options.port || '3000';
+    if (framework !== 'mintlify') {
       if (framework === 'docusaurus') {
-        devCommand += ` --port ${options.port}`;
+        devCommand += ` --port ${port}`;
       } else if (framework === 'vitepress') {
-        devCommand += ` --port ${options.port}`;
+        devCommand += ` --port ${port}`;
       }
     }
 

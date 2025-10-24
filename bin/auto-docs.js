@@ -43,7 +43,7 @@ program
 program
   .command('dev [audience]')
   .description('Start dev server for documentation')
-  .option('-p, --port <port>', 'Port number', '3000')
+  .option('-p, --port <port>', 'Port number')
   .action(dev);
 
 program
