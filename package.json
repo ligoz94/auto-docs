@@ -1,6 +1,6 @@
 {
   "name": "@ligoz94/auto-docs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "AI-powered multi-audience documentation generator supporting Mintlify, Docusaurus, and VitePress",
   "bin": {
     "auto-docs": "./bin/auto-docs.js"
