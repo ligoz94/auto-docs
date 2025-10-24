@@ -1,0 +1,87 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Auto-Docs Framework",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.example.com"
+  },
+  "tabs": [
+    {
+      "name": "Developers",
+      "url": "docs/developer"
+    },
+    {
+      "name": "Business",
+      "url": "docs/stakeholder"
+    },
+    {
+      "name": "Users",
+      "url": "docs/customer"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Developers",
+      "pages": [
+        "docs/developer/introduction",
+        {
+          "group": "Authentication",
+          "pages": [
+            "docs/developer/authentication/login-2fa"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Business",
+      "pages": [
+        "docs/stakeholder/introduction",
+        {
+          "group": "Product Updates",
+          "pages": [
+            "docs/stakeholder/releases/release-notes"
+          ]
+        },
+        {
+          "group": "Business Metrics",
+          "pages": [
+            "docs/stakeholder/metrics/overview"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Users",
+      "pages": [
+        "docs/customer/introduction",
+        {
+          "group": "Guides",
+          "pages": [
+            "docs/customer/guides/two-factor-authentication"
+          ]
+        },
+        {
+          "group": "What's New",
+          "pages": [
+            "docs/customer/changelog"
+          ]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/yourname/yourrepo",
+    "linkedin": "https://linkedin.com/company/yourcompany",
+    "twitter": "https://twitter.com/yourcompany"
+  }
+}

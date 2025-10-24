@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+scripts/node_modules/
+
+# Git
+.git/
+.github/
+
+# Documentation examples
+docs-examples/
+
+# Source files (already generated in scripts/)
+src/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+*.tgz
+
+# Markdown files (keep only README.md in package)
+BLUEPRINT.md
+COMPARISON.md
+EXAMPLES.md
+GETTING-STARTED.md
+INDEX.md
+INSTALL.md
+MULTI-AUDIENCE-GUIDE.md
+QUICK-REFERENCE.md
+README-MULTI-AUDIENCE.md
+START-HERE.md
+
+# Config examples
+doc-agent-config.json.example
+mint.json.example
+
+# Scripts directory (moved to lib/)
+scripts/
