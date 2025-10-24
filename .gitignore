@@ -5,6 +5,10 @@ node_modules/
 *.tgz
 package-lock.json
 
+# Config files (only in user projects, not in framework)
+.doc-agent-config.json
+.docs-tracking.json
+
 # Test directories
 test-*/
 

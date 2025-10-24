@@ -2,7 +2,7 @@
 
 > AI-powered multi-audience documentation generator for your codebase
 
-[![npm version](https://img.shields.io/npm/v/@your-name/auto-docs.svg)](https://www.npmjs.com/package/@your-name/auto-docs)
+[![npm version](https://img.shields.io/npm/v/@ligoz94/auto-docs.svg)](https://www.npmjs.com/package/@ligoz94/auto-docs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Auto-Docs automatically generates beautiful, multi-audience documentation from your code changes using AI. Supports **Mintlify**, **Docusaurus**, and **VitePress**.
@@ -31,13 +31,13 @@ Auto-Docs automatically generates beautiful, multi-audience documentation from y
 ## 🚀 Installation
 
 ```bash
-npm install -D @your-name/auto-docs
+npm install -D @ligoz94/auto-docs
 ```
 
 Or use directly with npx:
 
 ```bash
-npx @your-name/auto-docs init
+npx @ligoz94/auto-docs init
 ```
 
 ## ⚡ Quick Start

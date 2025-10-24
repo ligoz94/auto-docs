@@ -22,7 +22,7 @@ Complete checklist before publishing to NPM.
   ```
 
 ### 2. Update README.md
-- [ ] Replace all `@your-name/auto-docs` with your actual package name
+- [ ] Replace all `@ligoz94/auto-docs` with your actual package name
 - [ ] Replace all `your-name` with your GitHub username
 - [ ] Update installation instructions
 - [ ] Add badges (npm version, license, downloads)

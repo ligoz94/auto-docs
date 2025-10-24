@@ -37,4 +37,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Stakeholder**: Business-focused documentation with metrics and KPIs
 - **Customer**: End-user guides with tutorials and FAQs
 
-[1.0.0]: https://github.com/your-name/auto-docs/releases/tag/v1.0.0
+[1.0.0]: https://github.com/ligoz94/auto-docs/releases/tag/v1.0.0

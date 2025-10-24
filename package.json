@@ -1,5 +1,5 @@
 {
-  "name": "@your-name/auto-docs",
+  "name": "@ligoz94/auto-docs",
   "version": "1.0.0",
   "description": "AI-powered multi-audience documentation generator supporting Mintlify, Docusaurus, and VitePress",
   "bin": {
@@ -50,13 +50,13 @@
     "node": ">=18.0.0"
   },
   "license": "MIT",
-  "author": "Your Name",
+  "author": "ligoz94",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-name/auto-docs"
+    "url": "https://github.com/ligoz94/auto-docs"
   },
   "bugs": {
-    "url": "https://github.com/your-name/auto-docs/issues"
+    "url": "https://github.com/ligoz94/auto-docs/issues"
   },
-  "homepage": "https://github.com/your-name/auto-docs#readme"
+  "homepage": "https://github.com/ligoz94/auto-docs#readme"
 }
