@@ -22,11 +22,7 @@
   },
   "multiAudience": {
     "enabled": true,
-    "audiences": [
-      "developer",
-      "stakeholder",
-      "customer"
-    ]
+    "audiences": ["developer", "stakeholder", "customer"]
   },
   "ai": {
     "provider": "openrouter",
@@ -45,13 +41,7 @@
     }
   },
   "triggers": {
-    "filePatterns": [
-      "**/*.ts",
-      "**/*.tsx",
-      "**/*.js",
-      "**/*.jsx",
-      "**/*.py"
-    ],
+    "filePatterns": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.py"],
     "excludePatterns": [
       "node_modules/**",
       "dist/**",
@@ -65,10 +55,6 @@
     "createPR": true,
     "prBranch": "docs/auto-pr-{number}",
     "prTitle": "📚 [Auto] Documentation for PR #{number}",
-    "addLabels": [
-      "documentation",
-      "automated",
-      "ai-generated"
-    ]
+    "addLabels": ["documentation", "automated", "ai-generated"]
   }
 }
