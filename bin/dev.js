@@ -21,10 +21,13 @@ export async function dev(audience, options) {
     // Add port if specified (default 3000)
     const port = options.port || '3000';
     if (framework !== 'mintlify') {
+      // If using npm run, we need -- before options
+      const separator = devCommand.includes('npm run') ? ' --' : '';
+
       if (framework === 'docusaurus') {
-        devCommand += ` --port ${port}`;
+        devCommand += `${separator} --port ${port}`;
       } else if (framework === 'vitepress') {
-        devCommand += ` --port ${port}`;
+        devCommand += `${separator} --port ${port}`;
       }
     }
 
